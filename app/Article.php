@@ -14,6 +14,10 @@ class Article extends Model
         'user_id'
     ];
 
+    public function path() {
+        return route('articles.index');
+    }
+
     public function user() {
         return $this-> belongsTo(User::class);
         // return $this->belongsTo(User::class, 'user_id'); //override fk name
@@ -21,6 +25,7 @@ class Article extends Model
     }
 
     public function tags() {
-        return $this->belongsToMany(Tag::class);
+        // return $this->belongsToMany(Tag::class);
+        return $this->belongsToMany(Tag::class)->withTimestamps();
     }
 }

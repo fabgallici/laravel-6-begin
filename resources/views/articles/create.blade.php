@@ -20,7 +20,12 @@
       <br>
 
       <label for="tags">TAGS:</label>
-      <select name="tags[]" id=""></select>
+      <select name="tags[]" multiple> 
+      {{-- returns tags as array, if name="tag" return single value, but we have N<>N relation so multiple tags possible--}}
+        @foreach ($tags as $tag)
+            <option value="{{ $tag->id }}">{{ $tag->name }}</option>
+        @endforeach
+      </select>
       @error('tags')
         {{-- <p class="is-danger">{{ $errors->first('tags') }}</p> --}}
         <p class="is-danger">{{ $message }}</p>

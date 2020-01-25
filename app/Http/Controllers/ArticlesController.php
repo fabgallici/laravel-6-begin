@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Article;
 use App\Tag;
-
 use App\User;
 
 class ArticlesController extends Controller
@@ -25,14 +24,11 @@ class ArticlesController extends Controller
         return view('articles.view', ['articles' => $articles]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function create()
     {
-        return view('articles.create');
+        return view('articles.create', [
+            'tags' => Tag::all()
+        ]);
     }
 
     /**
@@ -41,37 +37,45 @@ class ArticlesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        // return $request;
-        $validateData = $request -> validate([
-            'title' => 'required',
-            'excerpt' => 'required',
-            'body' => 'required'
-        ]);
+    // public function store(Request $request)
+    // {     
+    //     $validateData = $request -> validate([
+    //         'title' => 'required',
+    //         'excerpt' => 'required',
+    //         'body' => 'required'
+    //     ]);
 
-        $article = Article::make($validateData);
-        // $article -> user_id = 3;
-        $user3 = User::findOrFail(3);
-        $article -> user() -> associate($user3);
-        // return $article;
+    //     $article = Article::make($validateData);
+    //     $user3 = User::findOrFail(3);
+    //     $article -> user() -> associate($user3);
+    //     $article->save();
+
+    //     return redirect(route('articles.index'));
+    // }
+
+    public function store() {
+        // dd(request()->all());
+        $this->validateArticle();
+        $article = new Article(request(['title', 'excerpt', 'body']));
+        $article->user_id = 6; //auth()->id()
         $article->save();
-
-        return redirect(route('articles.index'));
+        $article->tags()->attach(request('tags'));
+        // return redirect(route('articles.index'));
+        return redirect($article->path());  //path() defined in Article Model
     }
+    protected function validateArticle() {
+		return request()->validate([
+			'title' => 'required',
+			'excerpt' => 'required',
+            'body' => 'required',
+            'tags' => 'exists:tags,id'  //id exists on tags table
+		]);
+	}	
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    //no need to specifi $article id if route name of wildcard matches
     public function show(Article $article)
     {
         return view('articles.show', ['article' => $article]);
     }
-
     /**
      * Show the form for editing the specified resource.
      *
