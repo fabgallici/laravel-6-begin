@@ -56,7 +56,7 @@ class ArticlesController extends Controller
     public function store() {
         // dd(request()->all());
         $this->validateArticle();
-        $article = new Article(request(['title', 'excerpt', 'body']));
+        $article = new Article(request(['title', 'excerpt', 'body']));  //senza tags
         $article->user_id = 6; //auth()->id()
         $article->save();
         $article->tags()->attach(request('tags'));
